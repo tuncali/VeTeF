@@ -1,0 +1,13 @@
+#VRML_OBJ V8.5.0 utf8
+DEF ROAD_NETWORK Solid {
+  children [
+    DEF MAIN_ROAD StraightRoadSegment {
+      rotation 0 1 0 1.5708
+      width 21
+      numberOfLanes 3
+      length 1000
+      rightBorderBoundingObject TRUE
+      leftBorderBoundingObject TRUE
+    }
+  ]
+}

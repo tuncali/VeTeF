@@ -1,0 +1,57 @@
+#VRML_SIM V8.6 utf8
+WorldInfo {
+  ERP 0.6
+  basicTimeStep 10
+  lineScale 5
+  contactProperties [
+    ContactProperties {
+      coulombFriction [
+        8
+      ]
+      softCFM 1e-05
+    }
+    ContactProperties {
+      material2 "CitroenCZeroWheels"
+      coulombFriction [
+        8
+      ]
+      softCFM 1e-05
+    }
+    ContactProperties {
+      material2 "ToyotaPriusWheels"
+      coulombFriction [
+        8
+      ]
+      softCFM 1e-05
+    }
+  ]
+}
+DEF VIEWPOINT Viewpoint {
+  orientation 1 0 0 4.7382
+  position 50 163.995 0.361314
+  near 1
+  follow "solid"
+}
+Supervisor {
+  children [
+    Emitter {
+      channel 1
+    }
+    Receiver {
+    }
+  ]
+  controller "webots_vehicle_testing"
+  controllerArgs "10021"
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+Floor {
+  translation 400 -0.02 0
+  size 1500 200
+  tileSize 10 10
+  texture [
+    "textures/grass.jpg"
+  ]
+}

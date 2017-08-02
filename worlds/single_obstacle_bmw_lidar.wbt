@@ -1,0 +1,121 @@
+#VRML_SIM V8.5 utf8
+WorldInfo {
+  info [
+    "Autonomous Vehicle Simulation"
+    "The simple controller example uses an on-board camera to follow the yellow road lines and a SICK sensor to avoid the obstacles."
+    "The control of the vehicle is done using the driver library."
+    "The vehicle based on the Car PROTO is modelled with realistic physics properties: motor torques, body mass, friction forces, suspensions, etc."
+  ]
+  title "Autonomous Vehicle"
+  ERP 0.6
+  lineScale 1
+  contactProperties [
+    ContactProperties {
+      coulombFriction [
+        8
+      ]
+      softCFM 1e-05
+    }
+    ContactProperties {
+      material2 "CitroenCZeroWheels"
+      coulombFriction [
+        8
+      ]
+      softCFM 1e-05
+    }
+    ContactProperties {
+      material2 "ToyotaPriusWheels"
+      coulombFriction [
+        8
+      ]
+      softCFM 1e-05
+    }
+  ]
+}
+Viewpoint {
+  orientation 0.58569126 0.57313425 0.57313425 4.15
+  position -0.19075108 74.337644 8.189286
+  near 0.5
+  follow "CONVOY_ROBOT_1"
+}
+BmwX5Simple {
+  translation -1.5 0.4 60
+}
+BmwX5Simple {
+  translation -1.5 0.4 200
+}
+BmwX5Simple {
+  translation 1.5 0.4 170
+}
+BmwX5Simple {
+  translation 1.5 0.4 226
+}
+BmwX5 {
+  translation -1.5 0.4 0
+  color 0.7 0.7 0.7
+  name "CONVOY_ROBOT_1"
+  controller "vehicle_controller"
+  controllerArgs "dummy_vhc_nn_control BmwX5"
+  sensorsSlotFront [
+    DistanceSensor {
+      rotation 0 1 0 1.57079
+      name "distance"
+      lookupTable [
+        0 0 0
+        0.1 0.1 0
+        40 40 0
+      ]
+      type "laser"
+      gaussianWidth 100
+    }
+  ]
+  sensorsSlotTop [
+    VelodyneHDL-64E {
+      fastModel TRUE
+    }
+  ]
+  sensorsSlotCenter [
+    GPS {
+    }
+    Compass {
+      yAxis FALSE
+    }
+    Emitter {
+      channel 1
+      bufferSize 4096
+    }
+    Receiver {
+      channel 1
+      bufferSize 4096
+    }
+    Display {
+      width 128
+    }
+  ]
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+Floor {
+  translation 0 0.1 400
+  size 100 1000
+  tileSize 100 0.5
+  texture [
+    "textures/grass.jpg"
+  ]
+}
+SimpleTree {
+  translation 6 0 0
+}
+SimpleTree {
+  translation 6 0 128
+}
+SimpleTree {
+  translation 6 0 288
+}
+StraightRoadSegment {
+  translation 0 0.2 -100
+  roadBorderHeight 0
+  length 1000
+}

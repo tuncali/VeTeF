@@ -1,0 +1,96 @@
+#VRML_SIM V8.5 utf8
+WorldInfo {
+  ERP 0.6
+  basicTimeStep 10
+  lineScale 5
+  contactProperties [
+    ContactProperties {
+      coulombFriction [
+        8
+      ]
+      softCFM 1e-05
+    }
+    ContactProperties {
+      material2 "CitroenCZeroWheels"
+      coulombFriction [
+        8
+      ]
+      softCFM 1e-05
+    }
+    ContactProperties {
+      material2 "ToyotaPriusWheels"
+      coulombFriction [
+        8
+      ]
+      softCFM 1e-05
+    }
+  ]
+}
+Viewpoint {
+  orientation -0.75020778 -0.65991086 0.041303083 6.1167134
+  position 11.761999 0.57035066 22.525046
+  near 1
+}
+Supervisor {
+  controller "supervisor1"
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+Floor {
+  translation 0 -0.02 0
+  size 1000 1000
+  tileSize 10 10
+  texture [
+    "textures/grass.jpg"
+  ]
+}
+DEF ROAD_NETWORK Solid {
+  children [
+    DEF STRROAD StraightRoadSegment {
+      rotation 0 1 0 1.5707963
+      width 12
+      numberOfLanes 3
+      length 1980.23
+      rightBorderBoundingObject TRUE
+    }
+  ]
+}
+DEF VUT_1 CitroenCZero {
+  hidden position_0_0 -5.04508e-05
+  hidden position2_0_0 23.9011
+  hidden position_0_1 -5.07653e-05
+  hidden position2_0_1 23.8973
+  hidden position_0_2 1.11721
+  hidden position_0_3 1.11723
+  hidden linearVelocity_0 14 -0.0229253 0.00429302
+  hidden angularVelocity_0 1.66345e-06 -0.00407732 -0.019539
+  hidden linearVelocity_1 13.68 5.27138e-05 0.00988147
+  hidden angularVelocity_1 0.0349587 -0.00365938 -48.0383
+  hidden linearVelocity_2 13.6748 5.72079e-05 0.00987801
+  hidden angularVelocity_2 0.0349469 -0.00331013 -48.0201
+  hidden linearVelocity_3 13.6776 2.00304e-05 -0.000539733
+  hidden angularVelocity_3 -0.00205179 -0.00412371 2.61049
+  hidden linearVelocity_4 13.6725 2.60837e-05 -0.000581981
+  hidden angularVelocity_4 -0.00204418 -0.00414086 2.6104
+  translation 8.772819 0.23855199 -0.00072333265
+  rotation 0.023913473 0.99942892 -0.023874397 1.5705686
+  color 1 1 1
+  sensorsSlotCenter [
+    DEF VUT_1_TS TouchSensor {
+      translation 0 0.55 -1.3
+      boundingObject Box {
+        size 1.6 1 3.6
+      }
+      physics Physics {
+      }
+      type "force"
+    }
+  ]
+}
+DEF DVHC_2 ToyotaPriusSimple {
+  translation 26.6112 0.4 1.02
+  rotation 0 1 0 1.5707963
+  color 1 1 1
+}

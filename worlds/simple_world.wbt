@@ -1,0 +1,71 @@
+#VRML_SIM V8.5.0 utf8
+WorldInfo {
+  ERP 0.6
+  basicTimeStep 10
+  lineScale 5
+  contactProperties [
+    ContactProperties {
+      coulombFriction [
+        8
+      ]
+      softCFM 1e-05
+    }
+    ContactProperties {
+      material2 "CitroenCZeroWheels"
+      coulombFriction [
+        8
+      ]
+      softCFM 1e-05
+    }
+    ContactProperties {
+      material2 "ToyotaPriusWheels"
+      coulombFriction [
+        8
+      ]
+      softCFM 1e-05
+    }
+  ]
+}
+Viewpoint {
+  orientation 1 0 0 4.7382
+  position 0 163.995 0.361314
+  near 1
+  follow "solid:3"
+}
+Supervisor {
+  controller "supervisor1"
+}
+DEF BUS2 Bus2 {
+  translation 10 1 0
+  color 0.9 0.9 0.9
+  name "vehicle2"
+  controller "mp_controller_pid"
+}
+DEF BUS1 Bus {
+  controller "autonomous_vehicle"
+}
+Supervisor {
+  controller "supervisor1"
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+Floor {
+  translation 0 -0.02 0
+  size 1000 1000
+  tileSize 1 1
+  texture [
+    "textures/grass.jpg"
+  ]
+}
+DEF ROAD_NETWORK Solid {
+  children [
+    DEF MAIN_ROAD StraightRoadSegment {
+      rotation 0 1 0 1.5708
+      length 1000
+      rightBorderBoundingObject TRUE
+      leftBorderBoundingObject TRUE
+    }
+  ]
+}
