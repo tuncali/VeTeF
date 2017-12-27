@@ -1,6 +1,8 @@
-import numpy as np
 import math
 import struct
+
+import numpy as np
+
 from coordinate_system import CoordinateSystem
 
 
@@ -131,6 +133,7 @@ def receive_all_vhc_pos(received_message):
         # TODO: Check cmd for different type of messages
         cur_index = struct.calcsize('B')
         num_vehicles = struct.unpack('h', received_message[cur_index:cur_index + struct.calcsize('h')])[0]
+        print('Receiving vehicle positions: # vehicles {}'.format(num_vehicles))
         cur_index += struct.calcsize('h')
         for i in range(num_vehicles):
             pos = [0.0, 0.0, 0.0]
@@ -138,6 +141,7 @@ def receive_all_vhc_pos(received_message):
                 "Bddd", received_message[cur_index:cur_index + struct.calcsize("Bddd")])
             ret_dict[vehicle_id] = [pos[0], pos[1], pos[2]]
             cur_index += struct.calcsize("Bddd")
+            print('Receiving vhc {} pos.'.format(vehicle_id))
     return ret_dict
 
 

@@ -12,6 +12,7 @@ from generic_stanley_controller import *
 from controller_commons import *
 from controller_communication_interface import ControllerCommunicationInterface
 from coordinate_system import CoordinateSystem
+import matplotlib.pyplot as plt
 
 
 # **********************************************************************************************
@@ -25,7 +26,7 @@ class simple_acceleration_follower(BaseCarController):
         self.COMPASS_DEVICE_NAME = "vut_compass"
         self.STEP_TIME = 10
         self.TOUCH_SENSOR_NAME = "touch sensor"
-        self.MAX_NEGATIVE_THROTTLE_CHANGE = -float(self.STEP_TIME)/3000.0
+        self.MAX_NEGATIVE_THROTTLE_CHANGE = -float(self.STEP_TIME)/1000.0
         self.MAX_POSITIVE_THROTTLE_CHANGE = float(self.STEP_TIME)/1000.0  # I want to give full throttle from 0 in 1 sec
         self.STANLEY_K = 1.4   # 0.25
         self.STANLEY_K2 = 1.0  # 0.3
@@ -42,9 +43,12 @@ class simple_acceleration_follower(BaseCarController):
         self.prev_long_control = 0.0
         self.prev_lat_control = 0.0
         self.last_throttle = 0.0
-        self.LONG_PID_P = 0.06125  # 1.5
-        self.LONG_PID_I = 0.000005  # 0.1
-        self.LONG_PID_D = 0.1  # 8.5
+        self.LONG_PID_P = 0.175  # 1.5
+        self.LONG_PID_I = 0.0000 # 0.000005  # 0.1
+        self.LONG_PID_D = 0.00005 # 0.1  # 8.5
+        self.BRAKE_PID_P = 0.1  # 1.5
+        self.BRAKE_PID_I = 0.01  # 0.000005  # 0.1
+        self.BRAKE_PID_D = 0.00002  # 0.1  # 8.5
         self.PID_INTEGRATOR_MIN = -500.0
         self.PID_INTEGRATOR_MAX = 500.0
         self.STEP_TIME = 10
@@ -52,7 +56,11 @@ class simple_acceleration_follower(BaseCarController):
         self.MAX_NEGATIVE_THROTTLE_CHANGE = -float(self.STEP_TIME)/100.0
         self.MAX_POSITIVE_THROTTLE_CHANGE = float(self.STEP_TIME)/100.0
         self.longitudinal_pid = GenericPIDController()
+        self.braking_pid = GenericPIDController()
         self.lateral_controller = GenericStanleyController()
+        if 'Truck' in car_model:
+            self.lateral_controller.MAX_OUTPUT_VALUE = 0.37
+            self.lateral_controller.MIN_OUTPUT_VALUE = -0.37
         import ast
         print('list: {}'.format(target_acc_list))
         self.target_acc_list = ast.literal_eval(target_acc_list)
@@ -66,6 +74,9 @@ class simple_acceleration_follower(BaseCarController):
         self.longitudinal_pid.set_parameters(self.LONG_PID_P, self.LONG_PID_I, self.LONG_PID_D)
         self.longitudinal_pid.set_output_range(self.MAX_NEGATIVE_THROTTLE_CHANGE, self.MAX_POSITIVE_THROTTLE_CHANGE)
         self.longitudinal_pid.set_integrator_value_range(self.PID_INTEGRATOR_MIN, self.PID_INTEGRATOR_MAX)
+        self.braking_pid.set_parameters(self.BRAKE_PID_P, self.BRAKE_PID_I, self.BRAKE_PID_D)
+        self.braking_pid.set_output_range(self.MAX_NEGATIVE_THROTTLE_CHANGE, self.MAX_POSITIVE_THROTTLE_CHANGE)
+        self.braking_pid.set_integrator_value_range(self.PID_INTEGRATOR_MIN, self.PID_INTEGRATOR_MAX)
         self.lateral_controller.set_parameters(self.STANLEY_K, self.STANLEY_K2, self.STANLEY_K3)
         self.receiver_device = self.getReceiver(self.RECEIVER_DEVICE_NAME)
         if self.receiver_device is not None:
@@ -79,6 +90,13 @@ class simple_acceleration_follower(BaseCarController):
             gps_device.enable(self.GPS_DEVICE_PERIOD)
         self.start_car()
         target_ind = 0
+        a_e_log = np.array([])
+        a_err_log = np.array([])
+        a_des_log = np.array([])
+        tt = np.array([])
+        pp_log = np.array([])
+        ii_log = np.array([])
+        dd_log = np.array([])
 
         while True:
             self.step()
@@ -105,7 +123,17 @@ class simple_acceleration_follower(BaseCarController):
             acc_err = desired_acc - cur_acc
             if math.isnan(acc_err):
                 acc_err = 0.0
-            throttle_delta = self.longitudinal_pid.compute_no_derivative_kick(acc_err, cur_acc)
+            a_err_log = np.append(a_err_log, acc_err)
+            a_des_log = np.append(a_des_log, desired_acc)
+            a_e_log = np.append(a_e_log, cur_acc)
+            tt = np.append(tt, cur_sim_time)
+            if desired_acc >= -0.1:
+                (throttle_delta, pp, ii, dd) = self.longitudinal_pid.compute_no_derivative_kick_debug(acc_err, cur_acc)
+            else:
+                (throttle_delta, pp, ii, dd) = self.braking_pid.compute_no_derivative_kick_debug(acc_err, cur_acc)
+            pp_log = np.append(pp_log, pp)
+            ii_log = np.append(ii_log, ii)
+            dd_log = np.append(dd_log, dd)
             self.last_throttle += throttle_delta
             self.last_throttle = min(max(-1.0, self.last_throttle), 1.0)
             # print('desired_acc: {} acc_err: {}, cur_acc: {} throttle_delta:{}: throttle: {}'.format(
@@ -154,16 +182,31 @@ class simple_acceleration_follower(BaseCarController):
                         orient_err -= 2.0 * math.pi
                     if orient_err < -math.pi:
                         orient_err += 2.0 * math.pi
+                    print('orientation: {}'.format(orientation))
                 else:
                     orient_err = 0.0
             else:
                 orient_err = 0.0
+            print('orient_err: {} lat_distance: {}'.format(orient_err, lat_distance))
             if not math.isnan(cur_speed):
                 lat_control = self.lateral_controller.compute(orient_err, lat_distance, cur_speed)
             else:
                 lat_control = 0.0
 
-            # cur_speed = self.get_current_speed()
-            # print('curr_speed: {}'.format(cur_speed))
+            cur_speed = self.get_current_speed()
+            print('curr_speed: {}'.format(cur_speed))
+            print('curr control actions: throttle: {} steer: {}'.format(self.last_throttle, lat_control))
             self.set_control_actions_throttle_angle(self.last_throttle, lat_control)
+            self.control_gear()
             self.prev_lat_control = lat_control
+            # if cur_sim_time >= 49.9:
+            #     fig = plt.figure()
+            #     a_plot = fig.add_subplot(211)
+            #     a_plot.plot(tt, a_err_log, 'b')
+            #     a_plot.plot(tt, a_e_log, 'r')
+            #     a_plot.plot(tt, a_des_log, 'g')
+            #     pid_plot = fig.add_subplot(212)
+            #     pid_plot.plot(tt, pp_log, 'r')
+            #     pid_plot.plot(tt, ii_log, 'g')
+            #     pid_plot.plot(tt, dd_log, 'b')
+            #     plt.show()

@@ -1,4 +1,8 @@
 """Defines WebotsVehicle Class"""
+import sys
+import os
+filePath = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(filePath+"/../controller_commons")
 from coordinate_system import CoordinateSystem
 
 
@@ -11,6 +15,17 @@ class WebotsVehicle(object):
     BMW_X5 = 205
     BMW_X5_SIMPLE = 206
     BUS = 207
+    BUS_SIMPLE = 208
+    LINCOLN_MKZ = 209
+    LINCOLN_MKZ_SIMPLE = 210
+    RANGE_ROVER_SPORT = 211
+    RANGE_ROVER_SPORT_SIMPLE = 212
+    TRUCK_1 = 213
+    TRUCK_1_SIMPLE = 214
+    TRACTOR = 215
+    TRACTOR_SIMPLE = 216
+    SCOOTER_SIMPLE = 218
+    MOTORBIKE_SIMPLE = 220
     ACKERMANN_VEHICLE = 255
 
     STATE_ID_VELOCITY_X = 1
@@ -70,6 +85,14 @@ class WebotsVehicle(object):
             self.vehicle_model_id = self.TOYOTA_PRIUS
         elif 'Bus' in self.vehicle_model:
             self.vehicle_model_id = self.BUS
+        elif 'Lincoln' in self.vehicle_model:
+            self.vehicle_model_id = self.LINCOLN_MKZ
+        elif 'RangeRover' in self.vehicle_model:
+            self.vehicle_model_id = self.RANGE_ROVER_SPORT
+        elif 'Truck1' in self.vehicle_model:
+            self.vehicle_model_id = self.TRUCK_1
+        elif 'Tractor' in self.vehicle_model:
+            self.vehicle_model_id = self.TRACTOR
         else:
             self.vehicle_model_id = self.ACKERMANN_VEHICLE
 

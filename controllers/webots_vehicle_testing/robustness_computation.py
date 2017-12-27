@@ -1,7 +1,9 @@
 """Defines RobustnessComputation class"""
-import numpy as np
 import math
 import struct
+
+import numpy as np
+
 import dssm
 from coordinate_system import CoordinateSystem
 

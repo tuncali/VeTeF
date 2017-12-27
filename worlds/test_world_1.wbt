@@ -1,4 +1,4 @@
-#VRML_SIM V8.6 utf8
+#VRML_SIM R2018a utf8
 WorldInfo {
   ERP 0.6
   basicTimeStep 10
@@ -8,27 +8,66 @@ WorldInfo {
       coulombFriction [
         8
       ]
-      softCFM 1e-05
+      softCFM 1e-5
+      bumpSound ""
+      rollSound ""
+      slideSound ""
     }
     ContactProperties {
       material2 "CitroenCZeroWheels"
       coulombFriction [
         8
       ]
-      softCFM 1e-05
+      softCFM 1e-5
+      bumpSound ""
+      rollSound ""
+      slideSound ""
     }
     ContactProperties {
       material2 "ToyotaPriusWheels"
       coulombFriction [
         8
       ]
-      softCFM 1e-05
+      softCFM 1e-5
+      bumpSound ""
+      rollSound ""
+      slideSound ""
+    }
+    ContactProperties {
+      material2 "LincolnMKZWheels"
+      coulombFriction [
+        8
+      ]
+      softCFM 1e-5
+      bumpSound ""
+      rollSound ""
+      slideSound ""
+    }
+    ContactProperties {
+      material2 "RangeRoverSportSVRWheels"
+      coulombFriction [
+        8
+      ]
+      softCFM 1e-5
+      bumpSound ""
+      rollSound ""
+      slideSound ""
+    }
+    ContactProperties {
+      material2 "TruckWheels"
+      coulombFriction [
+        8
+      ]
+      softCFM 1e-5
+      bumpSound ""
+      rollSound ""
+      slideSound ""
     }
   ]
 }
 DEF VIEWPOINT Viewpoint {
   orientation 1 0 0 4.7382
-  position 50 163.995 0.361314
+  position 25 160.995 0.361314
   near 1
   follow "solid"
 }

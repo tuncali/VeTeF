@@ -113,11 +113,14 @@ class SimulationMessageInterface(object):
                  obj.current_rotation[1],
                  obj.current_rotation[2],
                  obj.current_rotation[3],
+                 obj.color[0],
+                 obj.color[1],
+                 obj.color[2],
                  obj.id,
                  vhc_model,
-                 obj.controller) = struct.unpack('dddddddB25s30s',
-                                                 msg[cur_msg_index:cur_msg_index + struct.calcsize('dddddddB25s30s')])
-                cur_msg_index += struct.calcsize('dddddddB25s30s')
+                 obj.controller) = struct.unpack('ddddddddddB25s30s',
+                                                 msg[cur_msg_index:cur_msg_index + struct.calcsize('ddddddddddB25s30s')])
+                cur_msg_index += struct.calcsize('ddddddddddB25s30s')
                 vhc_model = vhc_model.rstrip(' \t\r\n\0')  # Remove null characters at the end
                 vhc_model = vhc_model.strip()  # Remove space characters
                 obj.set_vehicle_model(vhc_model)
@@ -273,7 +276,7 @@ class SimulationMessageInterface(object):
         elif command == self.DATA_LOG:
             (num_data, ) = struct.unpack('I', msg[cur_msg_index:cur_msg_index + struct.calcsize('I')])
             cur_msg_index += struct.calcsize('I')
-            obj = np.fromstring(msg[cur_msg_index:], dtype='d%s' % num_data)
+            obj = np.fromstring(msg[cur_msg_index:], dtype=float, count=num_data)
         elif command == self.SET_HEART_BEAT_CONFIG:
             obj = HeartBeatConfig()
             (obj.sync_type, obj.period_ms) = \
@@ -407,13 +410,16 @@ class SimulationMessageInterface(object):
         msg = struct.pack('B', cmd)
         msg += struct.pack('B', vhc_type)
         # Vehicle main structure:
-        msg += struct.pack('dddddddB25s30s', vehicle_object.current_position[0],
+        msg += struct.pack('ddddddddddB25s30s', vehicle_object.current_position[0],
                            vehicle_object.current_position[1],
                            vehicle_object.current_position[2],
                            vehicle_object.current_rotation[0],
                            vehicle_object.current_rotation[1],
                            vehicle_object.current_rotation[2],
                            vehicle_object.current_rotation[3],
+                           vehicle_object.color[0],
+                           vehicle_object.color[1],
+                           vehicle_object.color[2],
                            vehicle_object.id,
                            vehicle_object.vehicle_model,
                            vehicle_object.controller)

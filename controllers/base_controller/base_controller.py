@@ -5,10 +5,12 @@ import os
 
 
 try:
-    libraryPath = os.environ.get("WEBOTS_HOME") + "/projects/automobile/libraries/python"
+    #libraryPath = os.environ.get("WEBOTS_HOME") + "/projects/automobile/libraries/python"
+    libraryPath = os.environ.get("WEBOTS_HOME") + "/lib/python27"
     libraryPath.replace('/', os.sep)
     sys.path.append(libraryPath)
-    from automobile import Car, Driver
+    #from automobile import Car, Driver
+    from vehicle import Car, Driver
 except ImportError:
     sys.stderr.write("Warning: 'automobile' or 'controller' module not found.\n")
     sys.exit(0)
@@ -28,7 +30,7 @@ class BaseCarController(Car):
     ENG_TYPE_SPLIT_HYBRID = 3
 
     def __init__(self, car_model):
-        self.debug_mode = False
+        self.debug_mode = True
         print car_model
         Car.__init__(self)
         self.car_model = car_model
@@ -177,6 +179,7 @@ class BaseCarController(Car):
         return self.getSteeringAngle()
 
     def get_current_speed(self):
+        % km/h
         return self.getCurrentSpeed()
 
     def get_throttle(self):
@@ -197,6 +200,23 @@ class BaseCarController(Car):
 
     def get_sim_time(self):
         return self.getTime()
+
+    def control_gear(self):
+        cur_rpm = self.get_rpm()
+        cur_gear = self.get_gear()
+        if cur_rpm > 3000:
+            if cur_gear < len(self.gearRatio):
+                cur_gear += 1
+                self.set_gear(cur_gear)
+                if self.debug_mode:
+                    print("UPSHIFT to {}".format(cur_gear))
+        elif cur_rpm < 1000:
+            if cur_gear > 1:
+                cur_gear -= 1
+                self.set_gear(cur_gear)
+                if self.debug_mode:
+                    print("DOWNSHIFT to {}".format(cur_gear))
+        return cur_gear
 
     def start_car(self):
         self.setThrottle(0.0)

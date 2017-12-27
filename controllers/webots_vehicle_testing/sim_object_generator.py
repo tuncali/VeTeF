@@ -12,7 +12,7 @@ class SimObjectGenerator(object):
 
     def generate_road_network_string(self, road_list, road_network_id):
         """Generates the Webots string for a list of road segments. These road segments go under a road segment."""
-        road_network_string = "#VRML_OBJ V8.5.0 utf8\n"
+        road_network_string = "#VRML_OBJ R2018a utf8\n"
         road_network_string += "DEF ROAD_NETWORK_" + str(road_network_id) + " Solid {\n"
         road_network_string += "  children ["
         for i in range(0, len(road_list)):
@@ -31,7 +31,7 @@ class SimObjectGenerator(object):
 
     def generate_vehicle_string(self, vhc_object):
         """Generates the Webots string for a vehicle."""
-        vehicle_string = "#VRML_OBJ V8.5.0 utf8\n"
+        vehicle_string = "#VRML_OBJ R2018a utf8\n"
         vehicle_string += "DEF " + vhc_object.def_name + " " + vhc_object.vehicle_model + " {\n"
         vehicle_string += "  translation " + str(vhc_object.current_position[0]) + " " + str(vhc_object.current_position[1]) + " " + str(vhc_object.current_position[2]) + " " + "\n"
         vehicle_string += "  rotation " + str(vhc_object.current_rotation[0]) + " " + str(vhc_object.current_rotation[1]) + " " + str(vhc_object.current_rotation[2]) + " " + str(vhc_object.current_rotation[3]) + " " + "\n"

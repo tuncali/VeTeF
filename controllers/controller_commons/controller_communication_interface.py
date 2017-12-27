@@ -1,5 +1,6 @@
 """Defines ControllerCommunicationInterface class"""
 import struct
+
 from webots_controller_parameter import WebotsControllerParameter
 
 
@@ -11,28 +12,51 @@ class ControllerCommunicationInterface(object):
     def __init__(self):
         pass
 
+    def get_receiver_message(self, receiver_device):
+        is_received = False
+        if receiver_device.getQueueLength() > 0:
+            received_message = []
+            # Receive message
+            while receiver_device.getQueueLength() > 0:
+                received_message += receiver_device.getData()
+                receiver_device.nextPacket()
+            received_message = ''.join(received_message)
+            is_received = True
+        else:
+            received_message = ''
+        return is_received, received_message
+
     def interpret_message(self, message):
-        data = None
-        data_size = 0
         (command, ) = struct.unpack('B', message[0:struct.calcsize('B')])
         if command == self.VHC_POSITION_MESSAGE:
             (data, data_size) = self.interpret_vehicle_position_message(message)
         elif command == self.SET_CONTROLLER_PARAMETERS_MESSAGE:
             (data, data_size) = self.interpret_set_controller_parameters_message(message)
+        else:
+            data = None
+            data_size = len(message)
         return command, data, data_size
 
-    def receive_command(self, receiver):
-        # TODO: Change this to return an array of commands, and corresponding data
-        command = None
-        data = None
-        data_size = 0
-        message = []
-        if receiver.getQueueLength() > 0:
-            message = receiver.getData()
-            if len(message) > 0:
-                (command, data, data_size) = self.interpret_message(message)
-            receiver.nextPacket()
-        return command, data, len(message), data_size
+    def receive_all_commands(self, receiver):
+        # returns an array of commands, and corresponding data
+        command_array = []
+        data_array = []
+        (is_received, received_message) = self.get_receiver_message(receiver)
+        if is_received:
+            cur_msg_index = 0
+            while cur_msg_index < len(received_message):
+                (command, data, data_size) = self.interpret_message(received_message[cur_msg_index:])
+                command_array.append(command)
+                data_array.append(data)
+                cur_msg_index += data_size
+        return command_array, data_array
+
+    def extract_all_vehicle_positions(self, command_array, data_array):
+        vhc_pos_array = []
+        for (cmd_ind, cmd) in enumerate(command_array):
+            if cmd == self.VHC_POSITION_MESSAGE:
+                vhc_pos_array.append(data_array[cmd_ind])
+        return vhc_pos_array
 
     def generate_vehicle_position_message(self, vhc_id, vhc_position):
         message = struct.pack('B', self.VHC_POSITION_MESSAGE)

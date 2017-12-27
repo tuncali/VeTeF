@@ -15,7 +15,7 @@ if len(sys.argv) >= 1:
 else:
     PORT_NO = 10020
 
-DEBUG_MODE = 0
+DEBUG_MODE = 2
 SUPERVISOR = SimController()
 SUPERVISOR.init(DEBUG_MODE, PORT_NO)
 SUPERVISOR.run()

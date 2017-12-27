@@ -1,15 +1,12 @@
-import math
 import os
-import sys
 import struct
-import numpy as np
+import sys
 
 filePath = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(filePath+"/../base_controller")
 sys.path.append(filePath+"/../generic_pid_controller")
 sys.path.append(filePath+"/../generic_stanley_controller")
 from base_controller import BaseCarController
-from generic_pid_controller import *
 from generic_stanley_controller import *
 from coordinate_system import CoordinateSystem
 
@@ -20,8 +17,8 @@ class simple_trajectory_follower(BaseCarController):
     def __init__(self, (car_model, self_vhc_id)):
         BaseCarController.__init__(self, car_model)
         self.EMITTER_DEVICE_NAME = "emitter"
-        self.RECEIVER_DEVICE_NAME = "dummy_vhc_receiver"
-        self.COMPASS_DEVICE_NAME = "dummy_vhc_compass"
+        self.RECEIVER_DEVICE_NAME = "receiver"
+        self.COMPASS_DEVICE_NAME = "compass"
         self.STEP_TIME = 10
         self.TOUCH_SENSOR_NAME = "touch sensor"
         self.MAX_NEGATIVE_THROTTLE_CHANGE = -float(self.STEP_TIME)/3000.0
@@ -83,7 +80,7 @@ class simple_trajectory_follower(BaseCarController):
     def run(self):
         #TARGETS = [(50.0, 0.0), (40.0, 3.5), (70.0, -3.5), (30.0, 3.5), (80.0, 0.0)]
         #TARGETS = [(80.0, -5.0), (80.0, -5.0), (70.0, 4.5), (0.0, -4.5), (70.0, 0.0)]
-        TARGETS = [(90.0, 0.0), (90.0, 0.0), (20.0, 0.0), (30.0, 0.0), (30.0, 0.0),(90.0, 0.0), (90.0, 0.0), (30.0, 0.0), (30.0, 0.0), (30.0, 0.0)]
+        TARGETS = [(40.0, 0.0), (40.0, 0.0), (0.0, 0.0), (30.0, 0.0), (30.0, 0.0),(90.0, 0.0), (90.0, 0.0), (0.0, 0.0), (0.0, 0.0), (30.0, 0.0)]
         #TARGETS = [(80.0, 0.0), (80.0, 0.0), (0.0, 0.0), (0.0, 0.0), (0.0, 0.0)]
         self.lateral_controller.set_parameters(self.STANLEY_K, self.STANLEY_K2, self.STANLEY_K3)
         # Get the emitter device for later access.
@@ -110,14 +107,15 @@ class simple_trajectory_follower(BaseCarController):
             target_speed = TARGETS[target_ind][0]
             target_lat_pos = TARGETS[target_ind][1]
             # Receive message
-            (is_rcv, temp_message) = self.get_receiver_message(self.receiver_device)
-            if is_rcv:
-                self.received_message = temp_message
-            self_vhc_pos = self.receive_vhc_pos(self.SELF_VHC_ID)
-            lat_distance = target_lat_pos - self_vhc_pos[CoordinateSystem.LAT_AXIS]
+            #(is_rcv, temp_message) = self.get_receiver_message(self.receiver_device)
+            #if is_rcv:
+            #    self.received_message = temp_message
+            #self_vhc_pos = self.receive_vhc_pos(self.SELF_VHC_ID)
+            #lat_distance = target_lat_pos - self_vhc_pos[CoordinateSystem.LAT_AXIS]
+            lat_distance = 0.0
             orientation = self.get_bearing()
             cur_speed = self.get_current_speed()
-            orient_err = orientation - self.ref_orientation
+            orient_err = 0.0  # orientation - self.ref_orientation
             if orient_err > math.pi:
                 orient_err -= 2.0*math.pi
             if orient_err < -math.pi:

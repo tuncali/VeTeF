@@ -1,10 +1,12 @@
 """Defines VehiclesManager class"""
 import math
-import struct
 import time
-from webots_controller_parameter import WebotsControllerParameter
-from staliro_signal import STaliroSignal
+import numpy as np
+
 from controller_communication_interface import ControllerCommunicationInterface
+from staliro_signal import STaliroSignal
+
+
 # from coordinate_system import CoordinateSystem
 
 
@@ -30,6 +32,26 @@ class VehiclesManager(object):
         self.acc_arr = [0.0]*(self.num_of_steps_for_jerk_calc + 3)
         self.cur_jerk_compute_index = 0
         self.controller_comm_interface = ControllerCommunicationInterface()
+
+    def control_vehicle_idm_vhc_follower(self, vhc_id, prec_vhc_id):
+        K_D = 0.02
+        K_V = 0.8
+        controlled_vhc = None
+        preceding_vhc = None
+        for vhc in self.vehicles:
+            if vhc.id == vhc_id:
+                controlled_vhc = vhc
+            elif vhc.id == prec_vhc_id:
+                preceding_vhc = vhc
+        if controlled_vhc is not None and preceding_vhc is not None:
+            dist = np.linalg.norm(np.array(preceding_vhc.current_position) - np.array(controlled_vhc.current_position))
+            desired_acceleration = K_D * dist + K_V * (preceding_vhc.speed - controlled_vhc.speed)
+            distance = controlled_vhc.speed * self.time_step + 0.5*desired_acceleration*self.time_step**2
+            #print('desired acc:{}, distance: {}'.format(desired_acceleration, distance))
+            new_pos = controlled_vhc.current_position[:]
+            new_pos[0] += distance
+            self.supervisorControl.set_obj_position_3D(controlled_vhc, new_pos)
+            self.supervisorControl.reset_obj_physics(controlled_vhc)
 
     def record_vehicle(self, vehicle_object, vehicle_type):
         """Add the vehicle in the records. vehicle_type can be VUT / Dummy"""
@@ -188,6 +210,7 @@ class VehiclesManager(object):
         self.current_sim_time = current_sim_time_s
         control_type = 0
         supervisor_emitter = self.get_emitter()
+        self.control_vehicle_idm_vhc_follower(3, 1)
         self.update_all_vehicles_states()
         self.transmit_all_vhc_positions(supervisor_emitter)
         self.transmit_init_controller_params(supervisor_emitter)

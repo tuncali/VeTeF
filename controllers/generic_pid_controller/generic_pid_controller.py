@@ -43,7 +43,7 @@ class GenericPIDController:
 
         return control_output
 
-    def compute_no_derivative_kick(self, err_input, f_value):
+    def compute_no_derivative_kick_debug(self, err_input, f_value):
         if self.prev_f_value is None:
             self.prev_f_value = f_value
         
@@ -59,4 +59,8 @@ class GenericPIDController:
         self.prev_err = err_input
         self.prev_f_value = f_value
 
-        return control_output
+        return control_output, p_term, i_term, d_term
+
+    def compute_no_derivative_kick(self, err_input, f_value):
+        (control_input, _, _, _) = self.compute_no_derivative_kick_debug(err_input, f_value)
+        return control_input

@@ -89,6 +89,11 @@ class SupervisorControls(Supervisor):
         """Sets the rotation of the object."""
         obj.rotation.setSFRotation(rotation)
 
+    def get_obj_rotation(self, obj):
+        """Sets the rotation of the object."""
+        rotation = obj.rotation.getSFRotation()
+        return rotation
+
     def reset_obj_physics(self, obj):
         """Resets the physics for the given simulation object."""
         obj.node.resetPhysics()

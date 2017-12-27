@@ -45,6 +45,7 @@ class SimController(object):
         """Initialize the simulation controller."""
         if self.debug_mode:
             print("Starting initialization")
+            sys.stdout.flush()
         self.comm_port_number = supervisor_params
         self.supervisor_control.init(supervisor_params)
         self.vehicles_manager = VehiclesManager(self.supervisor_control)
@@ -53,6 +54,7 @@ class SimController(object):
         if self.debug_mode:
             # self.robustnessFunction.set_debug_mode(self.debug_mode)
             print("Initialization: OK")
+            sys.stdout.flush()
 
     def set_debug_mode(self, mode):
         """Set debug mode."""
@@ -266,6 +268,7 @@ class SimController(object):
         # Start simulation
         print 'Simulation Duration = {}, step size = {}'.format(self.sim_data.simulation_duration_ms,
                                                                 self.sim_data.simulation_step_size_ms)
+        sys.stdout.flush()
         if self.sim_data.simulation_execution_mode == self.sim_data.SIM_TYPE_RUN:
             self.supervisor_control.set_simulation_mode(self.supervisor_control.SIMULATION_MODE_RUN)
         elif self.sim_data.simulation_execution_mode == self.sim_data.SIM_TYPE_FAST_NO_GRAPHICS:

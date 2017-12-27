@@ -1,7 +1,7 @@
-import math
 import os
-import sys
 import struct
+import sys
+
 import numpy as np
 
 filePath = os.path.dirname(os.path.realpath(__file__))
