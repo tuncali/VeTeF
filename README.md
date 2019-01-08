@@ -1,4 +1,7 @@
 # VeTeF - Vehicle Testing Framework
+
+New version of this framework is available as Sim-ATAV at [https://cpslab.assembla.com/spaces/sim-atav/git/source](https://cpslab.assembla.com/spaces/sim-atav/git/source)
+
 This is a framework (which is still in development phase) for testing autonomous vehicle control algorithms in simulation environments.
 
 This project is maintained by Cumhur Erkan TUNCALI who is a PhD student in Computer Engineering at Arizona State University.
